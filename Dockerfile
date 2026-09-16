@@ -5,12 +5,10 @@ WORKDIR /app
 COPY .mvn .mvn
 COPY mvnw .
 COPY pom.xml .
+COPY src src
 
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
-
-COPY src src
-COPY inventario_web inventario_web
 
 EXPOSE 10000
 
