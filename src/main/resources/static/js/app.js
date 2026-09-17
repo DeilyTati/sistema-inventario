@@ -1,14 +1,15 @@
 /* ==========================================================================
-   SISTEMA DE INVENTARIO - SENA
-   Lógica Unificada SPA (Conexión directa a Spring Boot / MySQL)
-   Aprendiz: Deily Tatiana Suarez Rodriguez - Ficha: 3233929
+//SISTEMA DE INVENTARIO - SENA
+// Lógica Unificada SPA (Conexión directa a Spring Boot / MySQL)
+// Aprendiz: Deily Tatiana Suarez Rodriguez - Ficha: 3233929
    ========================================================================== */
 
 // Configuración inteligente de la URL de la API
 // Si se ingresa por http://localhost:8081 usa /api/productos
 // Si se abre de otra manera (Live Server, etc.) apunta directamente al puerto 8081
-const BACKEND_BASE = (window.location.protocol.startsWith("http") && window.location.port === "8081") 
-    ? "" 
+
+const BACKEND_BASE = (window.location.protocol.startsWith("http") && window.location.port === "8081")
+    ? ""
     : "http://localhost:8081";
 const API_URL = `${BACKEND_BASE}/api/productos`;
 
@@ -352,8 +353,29 @@ if (formProducto) {
             await cargarEstadisticas();
 
         } catch (error) {
-            console.error("Error al guardar producto:", error);
-            mostrarAlerta(`<strong>Error al guardar:</strong> No fue posible guardar el producto en MySQL. Verifique que el servidor Spring Boot esté corriendo y que el código no esté duplicado.`, "danger", 8000);
+            console.error("ERROR REAL AL GUARDAR PRODUCTO:", error);
+
+            let mensajeError = error.message || "Error desconocido";
+
+            try {
+                if (mensajeError.trim().startsWith("{")) {
+                    const errorJSON = JSON.parse(mensajeError);
+
+                    mensajeError =
+                        errorJSON.message ||
+                        errorJSON.error ||
+                        errorJSON.errorMessage ||
+                        mensajeError;
+                }
+            } catch (e) {
+                console.warn("La respuesta del servidor no es JSON:", e);
+            }
+
+            mostrarAlerta(
+                `<strong>Error al guardar:</strong><br>${mensajeError}`,
+                "danger",
+                15000
+            );
         } finally {
             btnGuardar.disabled = false;
             if (productoEditandoId === null) {
@@ -571,4 +593,4 @@ document.addEventListener("DOMContentLoaded", () => {
     verificarHashUrl();
     verificarConexionServidor();
     cargarEstadisticas();
-});
+});
