@@ -128,7 +128,7 @@ async function verificarConexionServidor() {
     const badge = document.getElementById("badgeConexion");
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
         
         const respuesta = await fetch(API_URL, { method: "GET", signal: controller.signal });
         clearTimeout(timeoutId);
@@ -142,6 +142,19 @@ async function verificarConexionServidor() {
             badge.className = "badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill";
             badge.innerHTML = '<i class="bi bi-database-exclamation me-1"></i> Servidor Desconectado';
         }
+        // En Render gratuito, la primera petición puede tardar unos segundos en despertar el servidor.
+        // Reintentamos automáticamente una vez después de 4 segundos:
+        setTimeout(async () => {
+            try {
+                const r = await fetch(API_URL);
+                if (r.ok && badge) {
+                    badge.className = "badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill";
+                    badge.innerHTML = '<i class="bi bi-database-check me-1"></i> Conectado a MySQL';
+                    cargarEstadisticas();
+                    mostrarProductos();
+                }
+            } catch (_) {}
+        }, 4000);
     }
 }
 
