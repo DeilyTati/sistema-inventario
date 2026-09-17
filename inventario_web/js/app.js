@@ -1,7 +1,7 @@
 /* ==========================================================================
-   SISTEMA DE INVENTARIO - SENA
-   Lógica Unificada SPA
-   Conexión directa a Spring Boot / MySQL
+//  SISTEMA DE INVENTARIO - SENA
+//  Lógica Unificada SPA
+//  Conexión directa a Spring Boot / MySQL
    ========================================================================== */
 
 // =====================================================
@@ -178,6 +178,7 @@ function mostrarAlerta(
         warning: "bi-exclamation-circle-fill",
 
         info: "bi-info-circle-fill"
+
     };
 
 
@@ -220,9 +221,7 @@ function mostrarAlerta(
                 alerta.classList.remove("show");
 
                 setTimeout(() => {
-
                     alerta.remove();
-
                 }, 200);
             }
 
@@ -609,6 +608,7 @@ function renderizarTabla(productos) {
 
 
         tbodyProductos.innerHTML += fila;
+
     });
 
 
@@ -698,6 +698,7 @@ if (formProducto) {
                 cantidad: canVal,
 
                 proveedor: proVal
+
             };
 
 
@@ -730,8 +731,10 @@ if (formProducto) {
                                 method: "POST",
 
                                 headers: {
+
                                     "Content-Type":
                                         "application/json; charset=utf-8"
+
                                 },
 
                                 body:
@@ -753,8 +756,10 @@ if (formProducto) {
                                 method: "PUT",
 
                                 headers: {
+
                                     "Content-Type":
                                         "application/json; charset=utf-8"
+
                                 },
 
                                 body:
@@ -796,11 +801,8 @@ if (formProducto) {
 
 
                 mostrarAlerta(
-
                     `<strong>¡Éxito!</strong> El producto <strong>"${productoGuardado.nombre}"</strong> fue ${accion} correctamente en la base de datos MySQL.`,
-
                     "success",
-
                     6000
                 );
 
@@ -837,13 +839,44 @@ if (formProducto) {
                 );
 
 
+                let mensajeError =
+                    error.message ||
+                    "Error desconocido";
+
+
+                // Intentar interpretar JSON
+                // devuelto por Spring Boot
+
+                try {
+
+                    if (
+                        mensajeError.trim().startsWith("{")
+                    ) {
+
+                        const errorJSON =
+                            JSON.parse(mensajeError);
+
+
+                        mensajeError =
+                            errorJSON.message ||
+                            errorJSON.error ||
+                            errorJSON.errorMessage ||
+                            mensajeError;
+                    }
+
+                } catch (e) {
+
+                    console.warn(
+                        "No se pudo interpretar la respuesta del servidor:",
+                        e
+                    );
+                }
+
+
                 mostrarAlerta(
-
-                    `<strong>Error al guardar:</strong> No fue posible guardar el producto. Revise la conexión con el servidor.`,
-
+                    `<strong>Error al guardar:</strong><br>${mensajeError}`,
                     "danger",
-
-                    8000
+                    12000
                 );
 
 
@@ -856,7 +889,6 @@ if (formProducto) {
 
                     btnGuardar.innerHTML =
                         '<i class="bi bi-check-circle me-1"></i> Guardar producto';
-
 
                 } else {
 
@@ -1001,7 +1033,6 @@ function cancelarEdicion() {
 
 
     if (formProducto) {
-
         formProducto.reset();
     }
 
@@ -1338,5 +1369,6 @@ document.addEventListener(
         verificarConexionServidor();
 
         cargarEstadisticas();
+
     }
 );
