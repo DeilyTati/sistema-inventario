@@ -9,10 +9,10 @@
 // =====================================================
 // En Render o en Spring Boot local, la ruta relativa "/api/productos"
 // se adapta automáticamente al dominio y puerto donde se ejecute la página.
-// Si se abre como archivo local sin servidor (file://), usa localhost:8081 como fallback.
+// Si se abre como archivo local sin servidor (file://), usa la URL de Render como fallback.
 const API_URL = window.location.protocol.startsWith("http")
     ? "/api/productos"
-    : "http://localhost:8081/api/productos";
+    : "https://sistema-inventario-j34f.onrender.com/api/productos";
 
 // Elementos del formulario
 const formProducto = document.getElementById("formProducto");
@@ -135,12 +135,12 @@ async function verificarConexionServidor() {
 
         if (respuesta.ok && badge) {
             badge.className = "badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill";
-            badge.innerHTML = '<i class="bi bi-database-check me-1"></i> Conectado a MySQL';
+            badge.innerHTML = '<i class="bi bi-database-check me-1"></i> Conectado a MySQL (Nube)';
         }
     } catch (e) {
         if (badge) {
-            badge.className = "badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill";
-            badge.innerHTML = '<i class="bi bi-database-exclamation me-1"></i> Servidor Desconectado';
+            badge.className = "badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill";
+            badge.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Conectando con MySQL...';
         }
         // En Render gratuito, la primera petición puede tardar unos segundos en despertar el servidor.
         // Reintentamos automáticamente una vez después de 4 segundos:
@@ -149,7 +149,8 @@ async function verificarConexionServidor() {
                 const r = await fetch(API_URL);
                 if (r.ok && badge) {
                     badge.className = "badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill";
-                    badge.innerHTML = '<i class="bi bi-database-check me-1"></i> Conectado a MySQL';
+                    badge.innerHTML = '<i class="bi bi-database-check me-1"></i> Conectado a MySQL (Nube)';
+                    if (mensajeContenedor) mensajeContenedor.innerHTML = '';
                     cargarEstadisticas();
                     mostrarProductos();
                 }
@@ -172,16 +173,35 @@ async function obtenerProductos() {
         }
 
         const data = await respuesta.json();
+        
+        // Limpiar cualquier alerta previa de conexión si los datos cargan exitosamente
+        if (mensajeContenedor && mensajeContenedor.querySelector('.alert-warning, .alert-danger')) {
+            mensajeContenedor.innerHTML = '';
+        }
+        
         verificarConexionServidor();
         return data;
 
     } catch (error) {
         console.error("Error al consultar productos desde la API:", error);
-        mostrarAlerta(
-            "<strong>Aviso:</strong> No se pudo conectar con el servidor Spring Boot / MySQL. Asegúrese de haber iniciado la aplicación con <code>.\\mvnw.cmd spring-boot:run</code>.",
-            "danger",
-            0
-        );
+        
+        const esNube = window.location.protocol.startsWith("http") && 
+                       window.location.hostname !== "localhost" && 
+                       window.location.hostname !== "127.0.0.1";
+
+        if (esNube) {
+            mostrarAlerta(
+                "<strong>Conectando con la base de datos...</strong> El servidor en la nube se está sincronizando con MySQL (Aiven). Por favor espere unos segundos.",
+                "warning",
+                8000
+            );
+        } else {
+            mostrarAlerta(
+                "<strong>Aviso:</strong> No se pudo conectar con el servidor de la aplicación.",
+                "danger",
+                5000
+            );
+        }
         verificarConexionServidor();
         return [];
     }
