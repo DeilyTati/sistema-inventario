@@ -32,6 +32,7 @@ public class ProductoService {
         return repository.findById(id).map(producto -> {
             producto.setCodigo(productoDetalles.getCodigo());
             producto.setNombre(productoDetalles.getNombre());
+            producto.setMarca(productoDetalles.getMarca());
             producto.setCategoria(productoDetalles.getCategoria());
             producto.setPrecio(productoDetalles.getPrecio());
             producto.setCantidad(productoDetalles.getCantidad());

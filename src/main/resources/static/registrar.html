@@ -78,6 +78,15 @@
                             </div>
                         </div>
 
+                        <!-- Marca -->
+                        <div class="col-md-6">
+                            <label for="marca" class="form-label fw-semibold">Marca del producto</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-primary"><i class="bi bi-award"></i></span>
+                                <input type="text" class="form-control" id="marca" name="marca" placeholder="Ejemplo: Logitech, HP, Lenovo" required>
+                            </div>
+                        </div>
+
                         <!-- Categoría -->
                         <div class="col-md-6">
                             <label for="categoria" class="form-label fw-semibold">Categoría</label>
@@ -161,6 +170,7 @@
                             <tr>
                                 <th class="px-3">Código</th>
                                 <th>Nombre</th>
+                                <th>Marca</th>
                                 <th>Categoría</th>
                                 <th>Proveedor</th>
                                 <th class="text-end">Precio</th>
@@ -174,7 +184,7 @@
                         </tbody>
                         <tfoot class="table-light fw-bold">
                             <tr>
-                                <td colspan="6" class="text-end px-3">Valor total del inventario:</td>
+                                <td colspan="7" class="text-end px-3">Valor total del inventario:</td>
                                 <td class="text-end text-success"><span id="totalGeneral">$ 0.00</span></td>
                                 <td></td>
                             </tr>

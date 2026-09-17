@@ -18,6 +18,7 @@ const API_URL = window.location.protocol.startsWith("http")
 const formProducto = document.getElementById("formProducto");
 const codigo = document.getElementById("codigo");
 const nombre = document.getElementById("nombre");
+const marca = document.getElementById("marca");
 const categoria = document.getElementById("categoria");
 const precio = document.getElementById("precio");
 const cantidad = document.getElementById("cantidad");
@@ -217,7 +218,7 @@ async function mostrarProductos() {
 
     tbodyProductos.innerHTML = `
         <tr>
-            <td colspan="9" class="text-center py-4 text-muted">
+            <td colspan="10" class="text-center py-4 text-muted">
                 <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
                 Cargando datos desde MySQL...
             </td>
@@ -243,7 +244,7 @@ function renderizarTabla(productos) {
     if (!productos || productos.length === 0) {
         tbodyProductos.innerHTML = `
             <tr>
-                <td colspan="9" class="text-center py-5 text-muted">
+                <td colspan="10" class="text-center py-5 text-muted">
                     <i class="bi bi-box-seam fs-1 d-block mb-2 text-secondary"></i>
                     No hay productos registrados en la base de datos.<br>
                     <button class="btn btn-sm btn-primary mt-2" onclick="mostrarSeccion('registrar')">
@@ -269,6 +270,7 @@ function renderizarTabla(productos) {
             <tr>
                 <td class="fw-semibold text-primary"><i class="bi bi-upc me-1"></i>${producto.codigo || ""}</td>
                 <td class="fw-bold">${producto.nombre || ""}</td>
+                <td><span class="badge bg-info-subtle text-primary border border-info-subtle px-2 py-1"><i class="bi bi-award me-1"></i>${producto.marca || "Genérico"}</span></td>
                 <td><span class="badge bg-light text-dark border">${producto.categoria || "Sin categoría"}</span></td>
                 <td><i class="bi bi-building me-1 text-muted"></i>${producto.proveedor || "N/A"}</td>
                 <td>$${precioUnitario.toLocaleString("es-CO")}</td>
@@ -317,12 +319,13 @@ if (formProducto) {
         // Validaciones
         const codVal = codigo.value.trim();
         const nomVal = nombre.value.trim();
+        const marVal = marca ? marca.value.trim() : "";
         const catVal = categoria.value;
         const preVal = parseFloat(precio.value);
         const canVal = parseInt(cantidad.value);
         const proVal = proveedor.value.trim();
 
-        if (!codVal || !nomVal || !catVal || isNaN(preVal) || isNaN(canVal) || !proVal) {
+        if (!codVal || !nomVal || !marVal || !catVal || isNaN(preVal) || isNaN(canVal) || !proVal) {
             mostrarAlerta("Por favor complete todos los campos obligatorios del formulario.", "warning");
             return;
         }
@@ -330,6 +333,7 @@ if (formProducto) {
         const producto = {
             codigo: codVal,
             nombre: nomVal,
+            marca: marVal,
             categoria: catVal,
             precio: preVal,
             cantidad: canVal,
@@ -440,6 +444,7 @@ async function editarProducto(id) {
         productoEditandoId = producto.id;
         codigo.value = producto.codigo || "";
         nombre.value = producto.nombre || "";
+        if (marca) marca.value = producto.marca || "";
         categoria.value = producto.categoria || "";
         precio.value = producto.precio || 0;
         cantidad.value = producto.cantidad || 0;
@@ -578,6 +583,7 @@ function filtrarProductos() {
             return (
                 (producto.codigo || "").toLowerCase().includes(textoBusqueda) ||
                 (producto.nombre || "").toLowerCase().includes(textoBusqueda) ||
+                (producto.marca || "").toLowerCase().includes(textoBusqueda) ||
                 (producto.proveedor || "").toLowerCase().includes(textoBusqueda)
             );
         });
