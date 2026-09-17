@@ -4,14 +4,15 @@
 // Aprendiz: Deily Tatiana Suarez Rodriguez - Ficha: 3233929
    ========================================================================== */
 
-// Configuración inteligente de la URL de la API
-// Si se ingresa por http://localhost:8081 usa /api/productos
-// Si se abre de otra manera (Live Server, etc.) apunta directamente al puerto 8081
-
-const BACKEND_BASE = (window.location.protocol.startsWith("http") && window.location.port === "8081")
-    ? ""
-    : "http://localhost:8081";
-const API_URL = `${BACKEND_BASE}/api/productos`;
+// =====================================================
+// CONFIGURACIÓN DINÁMICA DE LA URL DE LA API
+// =====================================================
+// En Render o en Spring Boot local, la ruta relativa "/api/productos"
+// se adapta automáticamente al dominio y puerto donde se ejecute la página.
+// Si se abre como archivo local sin servidor (file://), usa localhost:8081 como fallback.
+const API_URL = window.location.protocol.startsWith("http")
+    ? "/api/productos"
+    : "http://localhost:8081/api/productos";
 
 // Elementos del formulario
 const formProducto = document.getElementById("formProducto");
